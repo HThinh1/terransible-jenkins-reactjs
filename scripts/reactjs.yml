@@ -1,0 +1,69 @@
+---
+- hosts: reactjs
+  become: yes
+  remote_user: ec2-user
+  tasks:
+    - name: Install Apache.
+      yum: name={{ item }} state=latest
+      with_items:
+        - httpd
+
+    - name: Node.js - Get script
+      get_url:
+        url: "https://rpm.nodesource.com/setup_12.x"
+        dest: "/home/nodejs.sh"
+        
+    - name: Node.js - Set execution permission to script
+      file:
+        path: "/home/nodejs.sh"
+        mode: "+x"
+  
+    - name: Node.js - Execute installation script
+      command: sh /home/nodejs.sh
+
+    - name: Node.js - Remove installation script
+      file:
+        path: "/home/nodejs.sh"
+        state: absent
+
+    - name: Install NodeJS
+      yum: name={{ item }} state=latest
+      with_items:
+        - gcc-c++
+        - make
+        - nodejs
+
+    - name: Init React App
+      become: yes
+      command: |
+        npx create-react-app {{project_name}}
+      args: 
+        chdir: /home/ec2-user
+        creates: /home/ec2-user/{{project_name}}
+
+    - name: Build React App and copy to Apache
+      become: yes
+      become_method: sudo
+      shell: |    
+        cd /home/ec2-user/{{project_name}}
+        npm run build
+        cp -r build/* /var/www/html/
+        
+    - name: Make sure Apache is started now and at boot.
+      service: name=httpd state=started enabled=yes
+
+    - name: Install Git
+      yum: name={{ item }} state=latest
+      with_items:
+        - git
+
+    # - name: Init Git
+    #   become: yes
+    #   become_method: sudo
+    #   command: |
+    #     git init
+    #     # git add origin ...
+    #     # git add .
+    #     # git commit -m '- First init'
+    #     # git push
+        

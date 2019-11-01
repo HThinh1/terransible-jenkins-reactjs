@@ -71,12 +71,12 @@ resource "aws_subnet" "devops_private_subnet" {
 
 # Subnetes association
 
-resource "aws_route_table_association" "terra_public_assoc" {
+resource "aws_route_table_association" "devops_public_assoc" {
   subnet_id      = "${aws_subnet.devops_public_subnet.id}"
   route_table_id = "${aws_route_table.devops_public_rt.id}"
 }
 
-resource "aws_route_table_association" "terra_private_assoc" {
+resource "aws_route_table_association" "devops_private_assoc" {
   subnet_id      = "${aws_subnet.devops_private_subnet.id}"
   route_table_id = "${aws_default_route_table.devops_private_rt.id}"
 }
