@@ -2,6 +2,8 @@
 - hosts: jenkins
   become: yes
   remote_user: ec2-user
+  vars:
+    ansible_ssh_private_key_file: "/root/.ssh/{{ PROJECT_NAME }}"
   tasks:
     - name: Update the software package repository
       yum:
@@ -37,9 +39,10 @@
       wait_for:
         timeout: 120
         
-    - name: Get Admin Password
+    - name: Get initial admin Password
       become: yes
       become_method: sudo
       shell: cat /var/lib/jenkins/secrets/initialAdminPassword
       register: password
-    - local_action: copy content={{ password.stdout }} dest=jenkinsInitPass.txt
+    - name: Save initial admin password
+      local_action: copy content={{ password.stdout }} dest=jenkinsInitPass.txt

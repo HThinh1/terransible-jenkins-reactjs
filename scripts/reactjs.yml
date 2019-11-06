@@ -2,6 +2,8 @@
 - hosts: reactjs
   become: yes
   remote_user: ec2-user
+  vars:
+    ansible_ssh_private_key_file: "/root/.ssh/{{ PROJECT_NAME }}"
   tasks:
     - name: Install Apache.
       yum: name={{ item }} state=latest
@@ -36,16 +38,16 @@
     - name: Init React App
       become: yes
       command: |
-        npx create-react-app {{project_name}}
+        npx create-react-app {{PROJECT_NAME}}
       args: 
         chdir: /home/ec2-user
-        creates: /home/ec2-user/{{project_name}}
+        creates: /home/ec2-user/{{PROJECT_NAME}}
 
     - name: Build React App and copy to Apache
       become: yes
       become_method: sudo
       shell: |    
-        cd /home/ec2-user/{{project_name}}
+        cd /home/ec2-user/{{PROJECT_NAME}}
         npm run build
         cp -r build/* /var/www/html/
         
@@ -56,14 +58,3 @@
       yum: name={{ item }} state=latest
       with_items:
         - git
-
-    # - name: Init Git
-    #   become: yes
-    #   become_method: sudo
-    #   command: |
-    #     git init
-    #     # git add origin ...
-    #     # git add .
-    #     # git commit -m '- First init'
-    #     # git push
-        

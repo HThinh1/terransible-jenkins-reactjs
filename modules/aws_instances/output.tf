@@ -1,7 +1,10 @@
-output "react_instance_ip" {
-  value = "aws_instance.react_instance.ip"
+output "react_instance_id" {
+  value = "${aws_instance.reactjs_instance.id}"
+}
+output "jenkins_instance_id" {
+  value = "${aws_instance.jenkins_instance.id}"
 }
 
-output "jenkins_instance_ip" {
-  value = "aws_instance.jenkins_instance.ip"
+output "keypair_auth_id" {
+  value = "${aws_key_pair.keypair_auth.id}"
 }

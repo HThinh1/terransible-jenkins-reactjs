@@ -1,9 +1,15 @@
 output "vpc_id" {
-  value = "${aws_vpc.devops_vpc.id}"
+  value = "${aws_vpc.vpc.id}"
 }
 output "public_subnet_id" {
-  value = "${aws_subnet.devops_public_subnet.id}"
+  value = "${aws_subnet.public_subnet.id}"
+}
+output "public1_subnet_id" {
+  value = "${aws_subnet.public_subnet1.id}"
 }
 output "private_subnet_id" {
-  value = "${aws_default_route_table.devops_private_rt.id}"
+  value = "${aws_default_route_table.private_rt.id}"
+}
+output "private1_subnet_id" {
+  value = "${aws_subnet.private_subnet1.id}}"
 }

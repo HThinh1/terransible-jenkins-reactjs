@@ -1,0 +1,6 @@
+infra/.terraform
+terraform.tfstate
+terraform.tfstate*
+.terraform
+.git
+.terraform.tfstate.lock.info

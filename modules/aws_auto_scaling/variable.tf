@@ -1,0 +1,14 @@
+variable "PROJECT_NAME" {}
+variable "react_instance_id" {}
+variable "lc_instance_type" {}
+variable "web_dev_sg_id" {}
+variable "keypair_auth_id" {}
+variable "asg_grace" {}
+variable "asg_hct" {}
+variable "asg_cap" {}
+variable "target_group_arn" {}
+variable "public1_subnet_id" {}
+variable "public_subnet_id" {}
+variable "alb_target_group_arn" {}
+variable "asg_min_size" {}
+variable "asg_max_size" {}

@@ -1,14 +1,14 @@
-resource "aws_key_pair" "devops_auth" {
-  key_name   = "${var.key_name}"
+resource "aws_key_pair" "keypair_auth" {
+  key_name   = "${var.PROJECT_NAME}"
   public_key = "${file(var.public_key_path)}"
 }
 
 resource "aws_instance" "reactjs_instance" {
-  instance_type = "${var.instance_type}"
-  ami = "${var.ami_id}"
-  key_name = "${aws_key_pair.devops_auth.id}"
-  vpc_security_group_ids = ["${var.public_sg_id}"]
-  subnet_id = "${var.public_subnet_id}"
+  instance_type          = "${var.instance_type}"
+  ami                    = "${var.ami_id}"
+  key_name               = "${aws_key_pair.keypair_auth.id}"
+  vpc_security_group_ids = ["${var.web_dev_sg_id}"]
+  subnet_id              = "${var.public_subnet_id}"
 
   provisioner "local-exec" {
     command = <<EOD
@@ -20,20 +20,20 @@ EOD
   }
 
   provisioner "local-exec" {
-    command = "aws ec2 wait instance-status-ok --instance-ids ${aws_instance.reactjs_instance.id} --profile devops && ansible-playbook -i ../scripts/aws_react_hosts ../scripts/reactjs.yml --extra-vars project_name=${var.project_name}"
+    command = "aws ec2 wait instance-status-ok --instance-ids ${aws_instance.reactjs_instance.id} && ansible-playbook -i ../scripts/aws_react_hosts ../scripts/reactjs.yml --extra-vars PROJECT_NAME=${var.PROJECT_NAME}"
   }
 
-  tags {
-    Name = "ReactJS Instance"
+  tags = {
+    Name = "${var.PROJECT_NAME} ReactJS Instance"
   }
 }
 
 resource "aws_instance" "jenkins_instance" {
-  instance_type = "${var.instance_type}"
-  ami = "${var.ami_id}"
-  key_name = "${aws_key_pair.devops_auth.id}"
+  instance_type          = "${var.instance_type}"
+  ami                    = "${var.ami_id}"
+  key_name               = "${aws_key_pair.keypair_auth.id}"
   vpc_security_group_ids = ["${var.jenkins_sg_id}"]
-  subnet_id = "${var.public_subnet_id}"
+  subnet_id              = "${var.public_subnet_id}"
 
   provisioner "local-exec" {
     command = <<EOD
@@ -45,10 +45,10 @@ EOD
   }
 
   provisioner "local-exec" {
-    command = "aws ec2 wait instance-status-ok --instance-ids ${aws_instance.reactjs_instance.id} --profile devops && ansible-playbook -i ../scripts/aws_jenkins_hosts ../scripts/jenkins.yml"
+    command = "aws ec2 wait instance-status-ok --instance-ids ${aws_instance.reactjs_instance.id} && ansible-playbook -i ../scripts/aws_jenkins_hosts ../scripts/jenkins.yml --extra-vars PROJECT_NAME=${var.PROJECT_NAME}"
   }
 
-  tags {
-    Name = "Jenkins Instance"
+  tags = {
+    Name = "${var.PROJECT_NAME} Jenkins Instance"
   }
 }

@@ -1,19 +1,16 @@
-# AWS Config
-aws_region = "us-east-1"
-profile = "devops"
-
-# VPC vars
-vpc_cidr = "10.0.0.0/16"
-cidrs = {
-  public = "10.0.0.0/24"
-  private = "10.0.1.0/24"
-}
-
-localip = "120.72.83.18/32"
-
-# Instance vars
-key_name = "kryptonite"
-ami_id = "ami-0b69ea66ff7391e80"
+aws_region    = "us-east-1"
+vpc_cidr      = "10.0.0.0/16"
+ami_id        = "ami-0b69ea66ff7391e80"
 instance_type = "t2.micro"
-public_key_path = "/root/.ssh/kryptonite.pub"
-project_name = "test"
+cidrs = {
+  public   = "10.0.0.0/24"
+  public1  = "10.0.1.0/24"
+  private  = "10.0.2.0/24"
+  private1 = "10.0.3.0/24"
+}
+lc_instance_type = "t2.micro"
+asg_min_size     = "1"
+asg_max_size     = "3"
+asg_grace        = "300"
+asg_cap          = "1"
+asg_hct          = "EC2"

@@ -1,3 +1,2 @@
 variable "vpc_id" {}
-variable "localip" {}
-variable "vpc_cidr" {}
+variable "PROJECT_NAME" {}
