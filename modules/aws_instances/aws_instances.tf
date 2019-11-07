@@ -22,6 +22,12 @@ EOD
   provisioner "local-exec" {
     command = "aws ec2 wait instance-status-ok --instance-ids ${aws_instance.reactjs_instance.id} && ansible-playbook -i ../scripts/aws_react_hosts ../scripts/reactjs.yml --extra-vars PROJECT_NAME=${var.PROJECT_NAME}"
   }
+  provisioner "local-exec" {
+    command = "cd ../scm/github && terraform init && TF_VAR_PROJECT_NAME=${var.PROJECT_NAME} terraform apply -auto-approve"
+  }
+  provisioner "local-exec" {
+    command = "ansible-playbook -i ../scripts/aws_react_hosts ../scripts/git.yml -e PROJECT_NAME=${var.PROJECT_NAME} -e GITHUB_ORGANIZATION=$GITHUB_ORGANIZATION"
+  }
 
   tags = {
     Name = "${var.PROJECT_NAME} ReactJS Instance"

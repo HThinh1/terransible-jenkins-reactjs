@@ -1,0 +1,32 @@
+- hosts: reactjs
+  remote_user: ec2-user
+  vars:
+    ansible_ssh_private_key_file: "/root/.ssh/{{ PROJECT_NAME }}"
+  tasks:
+
+    - name: Install Git
+      become: yes
+      yum:
+        name:
+          - git
+        state: latest
+
+    - name: Copy Jenkinsfile template
+      copy:
+        src: Jenkinsfile.template
+        dest: ~/{{ PROJECT_NAME }}/Jenkinsfile
+
+    - name: Copy Dockerfile template
+      copy:
+        src: Dockerfile.template
+        dest: ~/{{ PROJECT_NAME }}/Dockerfile
+
+    - name: Init code git
+      shell: |
+        cd /home/ec2-user/{{ PROJECT_NAME }}
+        git init
+        git add .
+        git commit -m "- First commit"
+        git remote add origin git@github.com:{{ GITHUB_ORGANIZATION }}/{{ PROJECT_NAME }}.git
+        ssh-keyscan github.com >> ~/.ssh/known_hosts
+        git push -u origin master

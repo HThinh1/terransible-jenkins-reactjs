@@ -1,11 +1,11 @@
 ---
 - hosts: reactjs
-  become: yes
   remote_user: ec2-user
   vars:
     ansible_ssh_private_key_file: "/root/.ssh/{{ PROJECT_NAME }}"
   tasks:
     - name: Install Apache.
+      become: yes
       yum: name={{ item }} state=latest
       with_items:
         - httpd
@@ -13,22 +13,24 @@
     - name: Node.js - Get script
       get_url:
         url: "https://rpm.nodesource.com/setup_12.x"
-        dest: "/home/nodejs.sh"
+        dest: "~/nodejs.sh"
         
     - name: Node.js - Set execution permission to script
       file:
-        path: "/home/nodejs.sh"
+        path: "~/nodejs.sh"
         mode: "+x"
   
     - name: Node.js - Execute installation script
-      command: sh /home/nodejs.sh
+      become: yes
+      command: sh /home/ec2-user/nodejs.sh
 
     - name: Node.js - Remove installation script
       file:
-        path: "/home/nodejs.sh"
+        path: "~/nodejs.sh"
         state: absent
 
     - name: Install NodeJS
+      become: yes
       yum: name={{ item }} state=latest
       with_items:
         - gcc-c++
@@ -36,7 +38,6 @@
         - nodejs
 
     - name: Init React App
-      become: yes
       command: |
         npx create-react-app {{PROJECT_NAME}}
       args: 
@@ -44,17 +45,20 @@
         creates: /home/ec2-user/{{PROJECT_NAME}}
 
     - name: Build React App and copy to Apache
-      become: yes
-      become_method: sudo
       shell: |    
         cd /home/ec2-user/{{PROJECT_NAME}}
         npm run build
-        cp -r build/* /var/www/html/
+        sudo cp -r build/* /var/www/html/
         
     - name: Make sure Apache is started now and at boot.
+      become: yes
       service: name=httpd state=started enabled=yes
 
-    - name: Install Git
-      yum: name={{ item }} state=latest
-      with_items:
-        - git
+    - name: Generate ssh keypair
+      openssh_keypair:
+        path: ~/.ssh/id_rsa
+        size: 2048
+        force: True
+      register: ssh_keypair
+
+    - local_action: copy content={{ ssh_keypair.public_key }} dest=react-instance-key.pub
