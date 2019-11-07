@@ -2,3 +2,6 @@ terraform.tfstate
 terraform.tfstate*
 .terraform
 docker-compose.yml
+aws_*_hosts
+jenkinsInitPass.txt
+react-instance-key.pub
